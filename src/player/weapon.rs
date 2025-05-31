@@ -3,7 +3,29 @@ use bevy::{input::{self, mouse}, prelude::*};
 use bevy_butler::*;
 use bevy_enhanced_input::prelude::*;
 
-use crate::core::Settings;
+#[add_observer(plugin= InputPlugin)]
+fn enter_weapon_motion_mode (
+    t: Trigger<Started<WeaponMotionMode>>,
+    mut sens: ResMut<CameraSensitivity>,
+    mut commands: Commands,
+){
+    sens.0 = 0.1;
+    commands
+        .entity(t.target())
+        .insert(Actions::<SwordInputContext>::default());
+}
+
+#[add_observer(plugin= InputPlugin)]
+fn leave_weapon_motion_mode (
+    t: Trigger<Completed<WeaponMotionMode>>,
+    mut sens: ResMut<CameraSensitivity>,
+    mut commands: Commands,
+){
+    sens.0 = 1.0;
+    commands
+        .entity(t.target())
+        .remove::<Actions<SwordInputContext>>();
+}
 
 #[derive(Component, InputContext)]
 #[require(Transform)]
