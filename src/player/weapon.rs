@@ -17,10 +17,8 @@ fn enter_weapon_motion_mode (
     mut sens: ResMut<CameraSensitivity>,
     mut commands: Commands,
 ){
+    info!("Entered WeaponMotionMode");
     sens.0 = 0.1;
-    commands
-        .entity(t.target())
-        .insert(Actions::<SwordInputContext>::default());
 }
 
 #[add_observer(plugin= InputPlugin)]
@@ -29,10 +27,8 @@ fn leave_weapon_motion_mode (
     mut sens: ResMut<CameraSensitivity>,
     mut commands: Commands,
 ){
+    info!("Left WeaponMotionMode");
     sens.0 = 1.0;
-    commands
-        .entity(t.target())
-        .remove::<Actions<SwordInputContext>>();
 }
 
 #[derive(Component, InputContext)]
@@ -47,8 +43,7 @@ pub struct SwordAsset(Handle<Scene>);
     RigidBody::Kinematic,
     GravityScale = GravityScale(0.0),
     Mass = Mass(1800.0),
-    Actions<SwordInputContext>,
-    SceneRoot = SceneRoot(SwordAsset)
+    Actions<SwordInputContext> = Actions::<SwordInputContext>::default(),
 )]
 pub struct Sword;
 #[add_observer(plugin= WeaponPlugin)]
@@ -58,6 +53,7 @@ fn on_sword_add(
     asset_server: Res<AssetServer>,
     mut sword_handle: Option<ResMut<SwordAsset>>,
 ){
+    info!("Sword Added");
     let handle = if let Some(ref mut handle_res) = sword_handle {
         handle_res.0.clone()
     } else {
@@ -161,4 +157,8 @@ fn motion_started(
     t: Trigger<Fired<EnterWeaponMotionMode>>
 ){
     info!("Entered WeaponMotionMode");
+}
+#[add_observer(plugin= WeaponPlugin)]
+fn test_weapon_rotation_bool  (t: Trigger<Fired<StartWeaponRotation>>) {
+    info!("StartWeaponRotation was fired");
 }

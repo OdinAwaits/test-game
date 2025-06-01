@@ -1,6 +1,8 @@
 use bevy_enhanced_input::prelude::*;
 use bevy::prelude::*;
 use bevy_butler::*;
+#[add_plugin(to_plugin= InputPlugin)]
+use super::weapon::WeaponPlugin;
 
 use super::{camera::FirstPersonCamera, Player};
 
