@@ -1,5 +1,8 @@
 use bevy::prelude::*;
+use bevy_enhanced_input::prelude::*;
 use bevy_butler::*;
+
+use crate::{core::Settings, player::plugin::InputPlugin};
 
 
 #[derive(Component, InputContext, Default)]
@@ -8,7 +11,7 @@ pub struct FirstPersonCamera;
 
 #[derive(Resource, Default)]
 #[insert_resource(plugin= InputPlugin, init= CameraSensitivity(1.0))]
-pub struct CameraSensitivity(f32);
+pub struct CameraSensitivity(pub f32);
 
 #[derive(Debug, InputAction)]
 #[input_action(output= Vec2)]
@@ -26,11 +29,6 @@ fn bind_camera_actions (
         .bind::<CameraRotation>().to((
             Input::mouse_motion()
                 .with_modifiers((Scale::splat(settings.mouse_sensitivity), Negate::all())),
-        ));
-    actions
-        .bind::<WeaponMotionMode>().to((
-            MouseButton::Left,
-            MouseButton::Right,
         ));
 }
 

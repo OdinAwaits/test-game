@@ -4,7 +4,7 @@ use avian3d::PhysicsPlugins;
 use bevy_enhanced_input::EnhancedInputPlugin;
 #[add_plugin( to_plugin= Plugins)]
 use bevy_skein::SkeinPlugin;
-
+pub mod ui;
 pub struct Plugins;
 
 #[butler_plugin]

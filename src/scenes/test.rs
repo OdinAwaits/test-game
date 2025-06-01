@@ -1,5 +1,7 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::CursorGrabMode};
 use bevy_butler::*;
+
+use crate::player::{plugin::InputPlugin, Player, weapon::Sword};
 
 #[add_system(schedule= Startup, plugin= InputPlugin)]
 pub fn startup (

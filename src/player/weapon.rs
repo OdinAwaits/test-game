@@ -1,11 +1,19 @@
 use avian3d::prelude::*;
-use bevy::{input::{self, mouse}, prelude::*};
+use bevy::prelude::*;
 use bevy_butler::*;
 use bevy_enhanced_input::prelude::*;
 
+use crate::{core::Settings, player::plugin::InputPlugin};
+
+use super::camera::CameraSensitivity;
+
+#[derive(Debug, InputAction)]
+#[input_action(output = bool)]
+pub struct EnterWeaponMotionMode;
+
 #[add_observer(plugin= InputPlugin)]
 fn enter_weapon_motion_mode (
-    t: Trigger<Started<WeaponMotionMode>>,
+    t: Trigger<Started<EnterWeaponMotionMode>>,
     mut sens: ResMut<CameraSensitivity>,
     mut commands: Commands,
 ){
@@ -17,7 +25,7 @@ fn enter_weapon_motion_mode (
 
 #[add_observer(plugin= InputPlugin)]
 fn leave_weapon_motion_mode (
-    t: Trigger<Completed<WeaponMotionMode>>,
+    t: Trigger<Completed<EnterWeaponMotionMode>>,
     mut sens: ResMut<CameraSensitivity>,
     mut commands: Commands,
 ){
@@ -28,7 +36,7 @@ fn leave_weapon_motion_mode (
 }
 
 #[derive(Component, InputContext)]
-#[require(Transform)]
+#[require(Transform,)]
 pub struct SwordInputContext;
 
 #[derive(Resource)]
@@ -39,6 +47,8 @@ pub struct SwordAsset(Handle<Scene>);
     RigidBody::Kinematic,
     GravityScale = GravityScale(0.0),
     Mass = Mass(1800.0),
+    Actions<SwordInputContext>,
+    SceneRoot = SceneRoot(SwordAsset)
 )]
 pub struct Sword;
 #[add_observer(plugin= WeaponPlugin)]
@@ -123,9 +133,12 @@ fn bind_weapon_actions(
                     Scale::splat(settings.mouse_sensitivity),
                     Negate::all()
                 ))
-        ).with_conditions((
-            Chord::<StartWeaponRotation>::default(),
-        ));
+        )
+            .with_conditions(Chord::<StartWeaponRotation>::default());
+    actions
+        .bind::<EnterWeaponMotionMode>()
+            .with_conditions(Chord::<StartWeaponRotation>::default())
+            .with_conditions(Chord::<StartWeaponThrust>::default());
 }
 
 #[add_observer(plugin= WeaponPlugin)]
@@ -141,4 +154,11 @@ fn rotate_weapon(
     pitch += t.value.y.to_radians();
 
     transform.rotation = Quat::from_euler(EulerRot::YXZ, yaw, pitch, 0.0);
+}
+
+#[add_observer(plugin= WeaponPlugin)]
+fn motion_started(
+    t: Trigger<Fired<EnterWeaponMotionMode>>
+){
+    info!("Entered WeaponMotionMode");
 }

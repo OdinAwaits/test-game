@@ -1,6 +1,8 @@
-
+use bevy_enhanced_input::prelude::*;
 use bevy::prelude::*;
 use bevy_butler::*;
+
+use super::{camera::FirstPersonCamera, Player};
 
 
 pub struct InputPlugin;
